@@ -1,5 +1,5 @@
 language: cpp
-dist: bionic
+dist: trusty
 sudo: false
 
 os: linux
@@ -13,7 +13,7 @@ matrix:
     - env: BUILD=Doc
       sudo: required
       # g++ 7 on Linux with C++17
-    - env: COMPILER=g++-7 BUILD=Debug STANDARD=17
+    - env: COMPILER=g++-6 BUILD=Debug STANDARD=17
       compiler: gcc
       addons:
         apt:
@@ -21,8 +21,8 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-7
-    - env: COMPILER=g++-7 BUILD=Release STANDARD=17
+            - g++-6
+    - env: COMPILER=g++-6 BUILD=Release STANDARD=17
       compiler: gcc
       addons:
         apt:
@@ -30,7 +30,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-7
+            - g++-6
       # Apple clang on OS X with C++17
     - env: BUILD=Debug STANDARD=17
       compiler: clang
@@ -48,16 +48,14 @@ matrix:
             - clang-6.0
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-bionic
-            - llvm-toolchain-bionic-6.0
+            - llvm-toolchain-trusty
+            - llvm-toolchain-trusty-6.0
   allow_failures:
       # Errors
-    - env: COMPILER=g++-7 BUILD=Debug STANDARD=17
+    - env: COMPILER=g++-6 BUILD=Debug STANDARD=17
       compiler: gcc
 
 before_script:
   - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then export CXX=${COMPILER}; fi
-  - if [[ "${BUILD}" != "Doc" ]]; then ${CXX} --version; fi
 
-script:
-  - support/travis-build.py
+
