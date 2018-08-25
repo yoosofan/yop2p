@@ -2,7 +2,7 @@
 yop2p - Yet Other C++ Peer to Peer Library
 ####################################################################################################
 ****************************************************************************************************
-or YOosofan C++ Peer to Peer Library
+oR YOosofan C++ Peer to Peer Library
 ****************************************************************************************************
 
 Ideas
@@ -29,7 +29,7 @@ For each tests in test/ directory an executable file is generated and can be run
 
 .. code:: sh
 
-    ./tesp2p
+    ./testp2p
 
 
 cleaning directory
