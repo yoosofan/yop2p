@@ -54,7 +54,6 @@ before_script:
   - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then export CXX=${COMPILER}; fi
 
 script:
-  - eval "${COMPILER}"
   - mkdir -p yop2p_build
   - cd yop2p_build
   - cmake ../ $TRAVIS_BUILD_DIR
