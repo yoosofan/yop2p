@@ -1,5 +1,4 @@
 language: cpp
-dist: trusty
 sudo: false
 
 os: linux
@@ -9,12 +8,8 @@ git:
 
 matrix:
   include:
-      # Documentation
-    - env: BUILD=Doc
-      sudo: required
       # g++ 7 on Linux with C++17
     - env: COMPILER=g++-6 BUILD=Debug STANDARD=17
-      compiler: gcc
       addons:
         apt:
           update: true
@@ -57,5 +52,12 @@ matrix:
 
 before_script:
   - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then export CXX=${COMPILER}; fi
+
+script:
+  - eval "${COMPILER}"
+  - mkdir -p yop2p_build
+  - cd yop2p_build
+  - cmake ../ $TRAVIS_BUILD_DIR
+  - make
 
 

@@ -19,17 +19,23 @@ Linux
 
 .. code:: sh
 
-    cmake .
+
+    mkdir -p build
+    cd build
+    cmake ../ 
     make
+    cd ..
 
 Run tests
 ====================================================================================================
 
-For each tests in test/ directory an executable file is generated and can be run. For example
+For each tests in test/ directory an executable file is generated and can be run in build/ directory. For example
 
 .. code:: sh
 
+    cd build
     ./testp2p
+    cd ..
 
 
 cleaning directory
