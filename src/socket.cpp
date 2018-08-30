@@ -1,6 +1,6 @@
 /*!
  * Copy from
- * https://raw.githubusercontent.com/fireice-uk/xmr-stak/master/xmrstak/net/socks.hpp
+ * https://raw.githubusercontent.com/fireice-uk/xmr-stak/master/xmrstak/net/socket.cpp
  * 2018/08/30/ 11:11:11
 */
 
@@ -27,7 +27,7 @@
   *
   */
 
-#include "socket.hpp"
+#include <socket.hpp>
 #include "jpsock.hpp"
 #include "xmrstak/jconf.hpp"
 #include "xmrstak/misc/console.hpp"

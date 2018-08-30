@@ -1,12 +1,12 @@
 #pragma once
 /*!
  * Copy from
- * https://raw.githubusercontent.com/fireice-uk/xmr-stak/master/xmrstak/net/socks.hpp
+ * https://raw.githubusercontent.com/fireice-uk/xmr-stak/master/xmrstak/net/socket.hpp
  * 2018/08/30/ 11:11:11
-*/
+ */
 
 #include <atomic>
-#include "socks.hpp"
+#include <socks.hpp>
 
 class jpsock;
 
