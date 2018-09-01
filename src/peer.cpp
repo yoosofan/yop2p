@@ -9,7 +9,7 @@
  * This file is part of yop2p project
  */
 
-#include<yop2p/peer.hpp>
+#include"yop2p/peer.hpp"
  
 initialize_peers::initialize_peers(const char*file_name_of_peers_trackers){
 	this->file_name_of_peers_trackers=file_name_of_peers_trackers;
