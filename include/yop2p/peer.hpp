@@ -69,6 +69,7 @@ private:
 protected:
 	bool run(void){
 		peer_list.emplace_back(new std::thread());
+		return true;
 	}
 };
 
@@ -78,6 +79,7 @@ private:
 protected:
 	bool run(void){
 		peer_list.emplace_back(new std::thread());
+		return true;
 	}
 };
 

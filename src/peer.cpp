@@ -42,12 +42,12 @@ void peer::create_peer_id(const char*env[]){
 	//auto time_point = std::chrono::system_clock::now(); //https://stackoverflow.com/a/15778082/886607
 	for(int i=0;env[i]!=nullptr;i++)std::cout<<env[i]<<std::endl;
 	auto end_time = std::chrono::high_resolution_clock::now();
-	auto now_c = std::chrono::high_resolution_clock::to_time_t(std::chrono::time_point_cast<std::chrono::nanoseconds>(start_time));
+	auto now_c = std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::nanoseconds>(start_time));// https://stackoverflow.com/a/32556992/886607
 	std::chrono::duration<long double> diff = end_time-start_time;
 	std::cout	<< end_time.time_since_epoch().count() <<" d "<< diff.count() << "\ttime\t"<<std::ctime(&now_c) << std::endl;
 	char time_string[100];//https://www.programiz.com/cpp-programming/library-function/ctime/strftime
 	strftime(time_string, 50, "%y%m%d%H%M%S", std::localtime(&now_c));//http://www.cplusplus.com/reference/ctime/strftime/
 	std::cout<< time_string << " ff "<< start_time.time_since_epoch().count() << std::endl;
-	std::string st1= std::to_string(start_time.time_since_epoch().count());
+	std::string st1= std::to_string(start_time.time_since_epoch().count());//https://stackoverflow.com/a/42866624/886607
 	std::cout<< st1 <<std::endl;
 }
