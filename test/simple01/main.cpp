@@ -1,7 +1,7 @@
 //! First sample
 /*!
- * 
- * 
+ *
+ *
  * \author Ahmad Yoosofan <yoosofan@mail.com>
  * \version 0.0.1
  * \date 2018
@@ -10,8 +10,8 @@
  */
 
 #include<yop2p/peer.hpp>
-int main(){
-	initialize_peers ipeers;
+int main(const int argc , const char *argv[], const char *env[]){
+	initialize_peers ipeers(env);
 	std::cout<<"hello world"<<std::endl;
 	return 0;
 }

@@ -5,49 +5,12 @@
  * 2018/08/30/ 11:11:11
  */
 
-#include "xmrstak/backend/cryptonight.hpp"
-
 #include <string>
 #include <string.h>
 #include <assert.h>
 
 // Structures that we use to pass info between threads constructors are here just to make
 // the stack allocation take up less space, heap is a shared resource that needs locks too of course
-
-struct pool_job
-{
-	char		sJobID[64];
-	uint8_t		bWorkBlob[112];
-	uint64_t	iTarget;
-	uint32_t	iWorkLen;
-	uint32_t	iSavedNonce;
-
-	pool_job() : iWorkLen(0), iSavedNonce(0) {}
-	pool_job(const char* sJobID, uint64_t iTarget, const uint8_t* bWorkBlob, uint32_t iWorkLen) :
-		iTarget(iTarget), iWorkLen(iWorkLen), iSavedNonce(0)
-	{
-		assert(iWorkLen <= sizeof(pool_job::bWorkBlob));
-		memcpy(this->sJobID, sJobID, sizeof(pool_job::sJobID));
-		memcpy(this->bWorkBlob, bWorkBlob, iWorkLen);
-	}
-};
-
-struct job_result
-{
-	uint8_t		bResult[32];
-	char		sJobID[64];
-	uint32_t	iNonce;
-	uint32_t	iThreadId;
-	xmrstak_algo algorithm = invalid_algo;
-
-	job_result() {}
-	job_result(const char* sJobID, uint32_t iNonce, const uint8_t* bResult, uint32_t iThreadId, xmrstak_algo algo) :
-		iNonce(iNonce), iThreadId(iThreadId), algorithm(algo)
-	{
-		memcpy(this->sJobID, sJobID, sizeof(job_result::sJobID));
-		memcpy(this->bResult, bResult, sizeof(job_result::bResult));
-	}
-};
 
 struct sock_err
 {
@@ -72,13 +35,6 @@ struct sock_err
 	sock_err& operator=(sock_err const&) = delete;
 };
 
-// Unlike socket errors, GPU errors are read-only strings
-struct gpu_res_err
-{
-	size_t idx; // GPU index
-	const char* error_str;
-	gpu_res_err(const char* error_str, size_t idx) : error_str(error_str), idx(idx) {}
-};
 
 enum ex_event_name { EV_INVALID_VAL, EV_SOCK_READY, EV_SOCK_ERROR, EV_GPU_RES_ERROR,
 	EV_POOL_HAVE_JOB, EV_MINER_HAVE_RESULT, EV_PERF_TICK, EV_EVAL_POOL_CHOICE,
