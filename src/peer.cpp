@@ -38,10 +38,12 @@ void peer::create_peer_id(const char*env[]){
 	//	hash of start time + combine hash of env +  some random generator +
 	//	hash mac address + hash ip address + hash pid + hash thread id + hash of diff time (start-end)
 
-	auto start_time = std::chrono::high_resolution_clock::now();
+	//auto start_time = std::chrono::high_resolution_clock::now();
+	auto start_time = std::chrono::system_clock::now();
 	//auto time_point = std::chrono::system_clock::now(); //https://stackoverflow.com/a/15778082/886607
 	for(int i=0;env[i]!=nullptr;i++)std::cout<<env[i]<<std::endl;
-	auto end_time = std::chrono::high_resolution_clock::now();
+	//auto end_time = std::chrono::high_resolution_clock::now();
+	auto end_time = std::chrono::system_clock::now();
 	auto now_c = std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::nanoseconds>(start_time));// https://stackoverflow.com/a/32556992/886607
 	std::chrono::duration<long double> diff = end_time-start_time;
 	std::cout	<< end_time.time_since_epoch().count() <<" d "<< diff.count() << "\ttime\t"<<std::ctime(&now_c) << std::endl;
