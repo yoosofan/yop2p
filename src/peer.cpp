@@ -44,7 +44,8 @@ void peer::create_peer_id(const char*env[]){
 	for(int i=0;env[i]!=nullptr;i++)std::cout<<env[i]<<std::endl;
 	//auto end_time = std::chrono::high_resolution_clock::now();
 	auto end_time = std::chrono::system_clock::now();
-	auto now_c = std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::nanoseconds>(start_time));// https://stackoverflow.com/a/32556992/886607
+	//auto now_c = std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::nanoseconds>(start_time));// https://stackoverflow.com/a/32556992/886607
+	auto now_c = std::chrono::system_clock::to_time_t(start_time);
 	std::chrono::duration<long double> diff = end_time-start_time;
 	std::cout	<< end_time.time_since_epoch().count() <<" d "<< diff.count() << "\ttime\t"<<std::ctime(&now_c) << std::endl;
 	char time_string[100];//https://www.programiz.com/cpp-programming/library-function/ctime/strftime
