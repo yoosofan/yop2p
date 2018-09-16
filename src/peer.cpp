@@ -8,10 +8,26 @@
  * \copyright GPL v3 http://www.gnu.org/licenses/gpl.html
  * This file is part of yop2p project
  */
+
+//	https://en.wikipedia.org/wiki/Ascii85#ZeroMQ_Version_.28Z85.29
+//	https://en.wikipedia.org/wiki/Binary-to-text_encoding
+//	https://rfc.zeromq.org/spec:32/Z85/
+//	https://github.com/zeromq/rfc/blob/master/src/spec_32.c
+//	https://github.com/zeromq/libzmq
+//	https://github.com/zeromq/libzmq/blob/master/include/zmq.h
+//	https://github.com/zeromq/libzmq/blob/master/src/zmq.cpp
+
 //	Because we do not care much about human reading of ID of an peer it is better to use another encoding like z85
 //	It will be more compact 
 //	However this prgram have about flaw about using unsigned char *  
 //	It should be written as array of bytes of size_t hash of parameters
+
+
+//	There are other more efficient encoding algorithms like 
+//	http://blog.kevinalbs.com/base122
+//	https://github.com/kevinAlbs/Base122
+//	but it is not good because it contains non printing character
+//	https://news.ycombinator.com/item?id=13049329
 
 #include "yop2p/peer.hpp"
 #include <functional>
@@ -95,37 +111,33 @@ void peer::create_peer_id(const char*env[]){
 
 	//auto start_time = std::chrono::high_resolution_clock::now();
 	auto start_time = std::chrono::system_clock::now();
-	std::string yooUuid;
+	int i;
+	size_t hashed_array[100];
 	//auto time_point = std::chrono::system_clock::now(); //https://stackoverflow.com/a/15778082/886607
-	for(int i=0;env[i]!=nullptr;i++)std::cout<<env[i]<<std::endl;
+	for(i=0;env[i]!=nullptr;i++)
+		if(i<90) hashed_array[i]=std::hash<const char*>{}(env[i]);
+		else break;
 	//auto end_time = std::chrono::high_resolution_clock::now();
 	//auto now_c = std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::nanoseconds>(start_time));// https://stackoverflow.com/a/32556992/886607
 	auto now_c = std::chrono::system_clock::to_time_t(start_time);
 	std::cout	<<	std::ctime(&now_c) << std::endl;
 	char time_string[100];//https://www.programiz.com/cpp-programming/library-function/ctime/strftime
-	strftime(time_string, 50, "%y%m%d%H%M%S", std::localtime(&now_c));//http://www.cplusplus.com/reference/ctime/strftime/
-	std::cout<< time_string << " ff "<< start_time.time_since_epoch().count() << std::endl;
+	//strftime(time_string, 50, "%y%m%d%H%M%S", std::localtime(&now_c));//http://www.cplusplus.com/reference/ctime/strftime/
+	//std::cout<< time_string << " ff "<< start_time.time_since_epoch().count() << std::endl;
 	std::string st1= std::to_string(start_time.time_since_epoch().count());//https://stackoverflow.com/a/42866624/886607
-	std::cout	<< st1 << "  " << st1.length() << " part1 "	<<	st1.substr(0,st1.length() /2)	
-				<<	" part2 "	<<	st1.substr(st1.length() /2)	<<	std::endl;
+	//std::cout	<< st1 << "  " << st1.length() << " part1 "	<<	st1.substr(0,st1.length() /2)	
+	//			<<	" part2 "	<<	st1.substr(st1.length() /2)	<<	std::endl;
 	
-	std::size_t start_time_hash_first  = std::hash<std::string>{}(st1.substr(0,st1.length() /2));
-	std::size_t start_time_hash_second = std::hash<std::string>{}(st1.substr(st1.length() /2));
-	yooUuid += std::to_string(start_time_hash_first);
-	yooUuid += std::to_string(start_time_hash_second);
-	std::cout	<<	start_time_hash_first << " second hash " << start_time_hash_second << std::endl;
+	hashed_array[i++] = std::hash<std::string>{}(st1.substr(0,st1.length() /2));
+	hashed_array[i++] = std::hash<std::string>{}(st1.substr(st1.length() /2));
 	
 	auto end_time = std::chrono::system_clock::now();
-	std::chrono::duration<long double> diff = end_time-start_time;
-	std::size_t diff_time_hash  = std::hash<double>{}(diff.count());
-	std::cout	<< diff_time_hash << std::endl;
-	yooUuid += std::to_string(diff_time_hash);
+	//std::chrono::duration<long double> diff = end_time-start_time;
+	hashed_array[i++] = std::hash<double>{}((end_time-start_time).count());
 	//const unsigned char * str1 = static_cast<const unsigned char *>(yooUuid.c_str());
 	//	https://stackoverflow.com/a/33523370/886607
-	const unsigned char * str1 = reinterpret_cast<unsigned char*>(const_cast<char*>(yooUuid.c_str()));
-	std::cout<<yooUuid<<" start char " << *str1<<" end char "<<*(str1+(yooUuid.length()-1))<<std::endl;
-	yooUuid=EncodeBase58(str1,str1+(yooUuid.length()-1));
-	std::cout<<yooUuid<<std::endl;
-	
-	
+	//const unsigned char * str1 = reinterpret_cast<unsigned char*>(const_cast<char*>(yooUuid.c_str()));
+	const unsigned char * str1 = reinterpret_cast<unsigned char*>(const_cast<size_t*>(hashed_array));
+	std::string yooUuid=EncodeBase58(str1,str1+(i*sizeof(size_t)-1));
+	std::cout<<i<<"\t"<<yooUuid.length()<<"\t"<<yooUuid<<std::endl;
 }
