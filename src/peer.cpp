@@ -33,6 +33,9 @@
 #include <functional>
 #include <chrono>
 #include <cassert>
+#include <random>
+#include <algorithm>
+#include <iterator>
 
 char peer::this_peer_id[peer::MAX_CHAR_PEER_ID]="";
 
@@ -111,12 +114,29 @@ void peer::create_peer_id(const char*env[]){
 
 	//auto start_time = std::chrono::high_resolution_clock::now();
 	auto start_time = std::chrono::system_clock::now();
-	int i;
+	int i,j,n;
 	size_t hashed_array[100];
+	std::vector<size_t> v;
 	//auto time_point = std::chrono::system_clock::now(); //https://stackoverflow.com/a/15778082/886607
 	for(i=0;env[i]!=nullptr;i++)
-		if(i<90) hashed_array[i]=std::hash<const char*>{}(env[i]);
-		else break;
+		v.emplace_back(std::hash<const char*>{}(env[i]));
+	n=i;
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle(v.begin(), v.end(), g);//https://en.cppreference.com/w/cpp/algorithm/random_shuffle
+	std::string strd1;
+	i=j=0;
+	for(auto m1: v){
+		strd1 += std::to_string(m1);
+		if(i%10 == 9 && j<30){
+			hashed_array[j++]=std::hash<std::string>{}(strd1);
+			strd1="";
+		}
+		i++;
+	}
+	hashed_array[j++]=std::hash<std::string>{}(strd1);
+	n=j;
+	v.clear();
 	//auto end_time = std::chrono::high_resolution_clock::now();
 	//auto now_c = std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::nanoseconds>(start_time));// https://stackoverflow.com/a/32556992/886607
 	auto now_c = std::chrono::system_clock::to_time_t(start_time);
@@ -128,16 +148,21 @@ void peer::create_peer_id(const char*env[]){
 	//std::cout	<< st1 << "  " << st1.length() << " part1 "	<<	st1.substr(0,st1.length() /2)	
 	//			<<	" part2 "	<<	st1.substr(st1.length() /2)	<<	std::endl;
 	
-	hashed_array[i++] = std::hash<std::string>{}(st1.substr(0,st1.length() /2));
-	hashed_array[i++] = std::hash<std::string>{}(st1.substr(st1.length() /2));
+	hashed_array[n++] = std::hash<std::string>{}(st1.substr(0,st1.length() /2));
+	hashed_array[n++] = std::hash<std::string>{}(st1.substr(st1.length() /2));
 	
 	auto end_time = std::chrono::system_clock::now();
 	//std::chrono::duration<long double> diff = end_time-start_time;
-	hashed_array[i++] = std::hash<double>{}((end_time-start_time).count());
+	hashed_array[n++] = std::hash<double>{}((end_time-start_time).count());
+
+	std::uniform_real_distribution<> dis(0.0009, 999999.99);
+	for(;n<12;n++)
+		hashed_array[n]=std::hash<double>{}(dis(g));
+
 	//const unsigned char * str1 = static_cast<const unsigned char *>(yooUuid.c_str());
 	//	https://stackoverflow.com/a/33523370/886607
 	//const unsigned char * str1 = reinterpret_cast<unsigned char*>(const_cast<char*>(yooUuid.c_str()));
 	const unsigned char * str1 = reinterpret_cast<unsigned char*>(const_cast<size_t*>(hashed_array));
-	std::string yooUuid=EncodeBase58(str1,str1+(i*sizeof(size_t)-1));
-	std::cout<<i<<"\t"<<yooUuid.length()<<"\t"<<yooUuid<<std::endl;
+	std::string yooUuid=EncodeBase58(str1,str1+(n*sizeof(size_t)-1));
+	std::cout<<n<<"\t"<<yooUuid.length()<<"\t"<<yooUuid<<std::endl;
 }
