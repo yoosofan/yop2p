@@ -39,6 +39,8 @@
 
 char peer::this_peer_id[peer::MAX_CHAR_PEER_ID]="";
 
+void error_report(const char*msg){std::cerr<<msg<<std::endl;exit(0);}
+
 //	https://en.wikipedia.org/wiki/Base58
 //	http://lenschulwitz.com/base58
 //	https://github.com/bitcoin/bitcoin/blob/master/src/base58.cpp
@@ -109,12 +111,9 @@ void peer::create_peer_id(const char*env[]){
 		cpuid(1, 0, cpu_info);
 		return (cpu_info[2] & (1 << 25)) != 0;
 	*/
-	//	http://www.cplusplus.com/reference/string/
-	//	http://www.cplusplus.com/reference/string/string/substr/
-
 	//auto start_time = std::chrono::high_resolution_clock::now();
 	auto start_time = std::chrono::system_clock::now();
-	int i,j,n;
+	int i,j,k,n;
 	size_t hashed_array[100];
 	std::vector<size_t> v;
 	//auto time_point = std::chrono::system_clock::now(); //https://stackoverflow.com/a/15778082/886607
@@ -125,23 +124,26 @@ void peer::create_peer_id(const char*env[]){
 	std::mt19937 g(rd());
 	std::shuffle(v.begin(), v.end(), g);//https://en.cppreference.com/w/cpp/algorithm/random_shuffle
 	std::string strd1;
-	i=j=0;
-	for(auto m1: v){
-		strd1 += std::to_string(m1);
-		if(i%10 == 9 && j<30){
-			hashed_array[j++]=std::hash<std::string>{}(strd1);
-			strd1="";
+	i=j=0;//k=n<100?4:16;
+	if(n>=8){
+		for(auto m1: v){
+			strd1 += std::to_string(m1);
+			if(i++%(n/4) == (n/6) && j<10){
+				hashed_array[j++]=std::hash<std::string>{}(strd1);
+				strd1="";
+			}
 		}
-		i++;
+		hashed_array[j++]=std::hash<std::string>{}(strd1);
 	}
-	hashed_array[j++]=std::hash<std::string>{}(strd1);
+	else
+		for(auto m1: v)
+			hashed_array[j++]=std::hash<std::string>{}(std::to_string(m1));
 	n=j;
 	v.clear();
 	//auto end_time = std::chrono::high_resolution_clock::now();
 	//auto now_c = std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::nanoseconds>(start_time));// https://stackoverflow.com/a/32556992/886607
-	auto now_c = std::chrono::system_clock::to_time_t(start_time);
-	std::cout	<<	std::ctime(&now_c) << std::endl;
-	char time_string[100];//https://www.programiz.com/cpp-programming/library-function/ctime/strftime
+	//auto now_c = std::chrono::system_clock::to_time_t(start_time);	std::cout	<<	std::ctime(&now_c) << std::endl;
+	//char time_string[100];//https://www.programiz.com/cpp-programming/library-function/ctime/strftime
 	//strftime(time_string, 50, "%y%m%d%H%M%S", std::localtime(&now_c));//http://www.cplusplus.com/reference/ctime/strftime/
 	//std::cout<< time_string << " ff "<< start_time.time_since_epoch().count() << std::endl;
 	std::string st1= std::to_string(start_time.time_since_epoch().count());//https://stackoverflow.com/a/42866624/886607
@@ -158,7 +160,8 @@ void peer::create_peer_id(const char*env[]){
 	std::uniform_real_distribution<> dis(0.0009, 999999.99);
 	for(;n<12;n++)
 		hashed_array[n]=std::hash<double>{}(dis(g));
-
+	std::cout<< std::this_thread::get_id() << std::endl;
+	std::cout<< std::thread::hardware_concurrency() << std::endl;
 	//const unsigned char * str1 = static_cast<const unsigned char *>(yooUuid.c_str());
 	//	https://stackoverflow.com/a/33523370/886607
 	//const unsigned char * str1 = reinterpret_cast<unsigned char*>(const_cast<char*>(yooUuid.c_str()));
